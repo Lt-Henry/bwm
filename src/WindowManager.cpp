@@ -31,6 +31,8 @@ void WindowManager::Run()
 		XEvent event;
 		Window window;
 		
+		XWindowChanges changes;
+		
 		XNextEvent(display,&event);
 		
 		switch(event.type)
@@ -50,6 +52,32 @@ void WindowManager::Run()
 			
 			case ReparentNotify:
 				cout<<"reparented window"<<endl;
+			break;
+			
+			case MapRequest:
+				cout<<"map request"<<endl;
+				window=event.xmaprequest.window;
+				XMapWindow(display,window);
+			break;
+			
+			case ConfigureNotify:
+				cout<<"configure notify"<<endl;
+			break;
+			
+			case ConfigureRequest:
+				cout<<"configure request"<<endl;
+				
+				
+				changes.x=event.xconfigurerequest.x;
+				changes.y=event.xconfigurerequest.y;
+				changes.width=event.xconfigurerequest.width;
+				changes.height=event.xconfigurerequest.height;
+				changes.border_width=0;
+				changes.sibling=event.xconfigurerequest.above;
+				changes.stack_mode=event.xconfigurerequest.detail;
+				
+				window=event.xconfigurerequest.window;
+				XConfigureWindow(display,window,event.xconfigurerequest.value_mask,&changes);
 			break;
 		}
 	}
