@@ -1,5 +1,6 @@
 
 #include "WindowManager.hpp"
+#include "Decorator.hpp"
 
 #include <iostream>
 
@@ -10,6 +11,8 @@ WindowManager::WindowManager(string name)
 {
 	display=XOpenDisplay(name.c_str());
 	root=DefaultRootWindow(display);
+	
+	cout<<"root: "<<root<<endl;
 }
 
 WindowManager::~WindowManager()
@@ -20,6 +23,9 @@ WindowManager::~WindowManager()
 
 void WindowManager::Run()
 {
+	
+	Decorator * tab=new Decorator(display,root,"Hello world");
+	
 	bool quit_requested=false;
 	
 	XSelectInput(display,root,SubstructureRedirectMask | SubstructureNotifyMask);
@@ -44,6 +50,7 @@ void WindowManager::Run()
 		
 			case CreateNotify:
 				cout<<"create window"<<endl;
+				
 			break;
 			
 			case DestroyNotify:
@@ -78,6 +85,29 @@ void WindowManager::Run()
 				
 				window=event.xconfigurerequest.window;
 				XConfigureWindow(display,window,event.xconfigurerequest.value_mask,&changes);
+				
+				tab->Update();
+				
+			break;
+			
+			case ButtonPress:
+				cout<<"Button pressed"<<endl;
+				cout<<"window: "<<event.xbutton.window<<endl;
+				cout<<"x: "<<event.xbutton.x<<endl;
+				cout<<"y: "<<event.xbutton.y<<endl;
+			break;
+			
+			case ButtonRelease:
+				cout<<"Button released"<<endl;
+				cout<<"window: "<<event.xbutton.window<<endl;
+			break;
+			
+			case MotionNotify:
+				/*
+				cout<<"motion"<<endl;
+				cout<<"x: "<<event.xmotion.x<<endl;
+				cout<<"y: "<<event.xmotion.y<<endl;
+				*/ 
 			break;
 		}
 	}
