@@ -1,5 +1,5 @@
 
-add_executable(bwm main.cpp WindowManager.cpp Decorator.cpp)
+add_executable(bwm main.cpp WindowManager.cpp Decorator.cpp Utils.cpp)
 
 #require pkg-config support
 find_package(PkgConfig REQUIRED)

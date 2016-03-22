@@ -5,6 +5,7 @@
 #include <X11/Xlib.h>
 #include <cairo.h>
 
+
 #include <string>
 
 namespace com
@@ -23,9 +24,6 @@ namespace com
 				
 				cairo_t * cairo;
 				cairo_surface_t * surface;
-				uint8_t * buffer;
-				XImage * xbuffer;
-				GC gc;
 				
 				unsigned int width;
 				unsigned int height;

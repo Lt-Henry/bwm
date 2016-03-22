@@ -1,10 +1,13 @@
 
 #include "Decorator.hpp"
+#include "Utils.hpp"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <cairo-xlib.h>
 
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 using namespace com::toxiclabs::bwm;
@@ -40,13 +43,11 @@ Decorator::Decorator(Display * display,Window child,string name)
 		
 		cairo=nullptr;
 		surface=nullptr;
-		buffer=nullptr;
+				
 		
-		gc = XCreateGC(display, me, 0, nullptr);
-		
-		CreateContext();
-		
-		Update();
+	CreateContext();
+	
+	Update();
 }
 
 
@@ -58,13 +59,42 @@ Decorator::~Decorator()
 
 void Decorator::Update()
 {
+	cairo_text_extents_t te;
+	cairo_font_extents_t fe;
+
+	cairo_select_font_face (cairo, "Ubuntu", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size (cairo, 14.0);
+	cairo_text_extents (cairo, name.c_str(), &te);
+	cairo_font_extents (cairo, &fe);
 	
-		cairo_set_source_rgb(cairo, 0.6, 0.2, 0.2);
-		cairo_paint(cairo);
-	
-		XPutImage(display,me,gc,xbuffer,0,0,0,0,width,height);
-		XFlush(display);	
 		
+	
+	color::RGB(cairo,0xbdc3c7);
+	cairo_paint(cairo);
+	
+	float tx;
+	float ty;
+	
+	tx=(width/2.0)-(te.width/2.0f);
+	ty=fe.height+2.0f;
+	
+	color::RGB(cairo,16,16,16);
+	
+	cairo_move_to(cairo,tx,ty);
+	cairo_show_text (cairo, name.c_str());
+	
+	color::RGB(cairo,0xe74c3c);
+	cairo_arc(cairo,width-10,10,8,0,2.0f*M_PI);
+	cairo_fill(cairo);
+	
+	color::RGB(cairo,0xf39c12);
+	cairo_arc(cairo,width-30,10,8,0,2.0f*M_PI);
+	cairo_fill(cairo);
+	
+	color::RGB(cairo,0x27ae60);
+	cairo_arc(cairo,width-50,10,8,0,2.0f*M_PI);
+	cairo_fill(cairo);
+
 }
 
 void Decorator::CreateContext()
@@ -80,16 +110,8 @@ void Decorator::CreateContext()
 	
 	cout<<"New size: "<<width<<","<<height<<endl;	
 	
-	if(surface!=nullptr)
-	{
-		cairo_surface_destroy(surface);
-		XDestroyImage(xbuffer);
-		cairo_destroy(cairo);
-	}
+	surface = cairo_xlib_surface_create(display, me, DefaultVisual(display, 0), width, height);
+    cairo_xlib_surface_set_size(surface, width, height);
+    cairo=cairo_create(surface);
 	
-	buffer=new uint8_t[width*height*4];
-	surface=cairo_image_surface_create_for_data(buffer,CAIRO_FORMAT_ARGB32,width,height,width*4);
-	cairo=cairo_create(surface);
-	
-	xbuffer = XCreateImage(display,DefaultVisual(display,0),24,ZPixmap,0,(char *)buffer,width,height,32,4*width);
 }

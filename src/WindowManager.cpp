@@ -28,7 +28,7 @@ void WindowManager::Run()
 	
 	bool quit_requested=false;
 	
-	XSelectInput(display,root,SubstructureRedirectMask | SubstructureNotifyMask);
+	XSelectInput(display,root,SubstructureRedirectMask | SubstructureNotifyMask | ExposureMask);
 	
 	XSync(display, false);
 	
@@ -43,6 +43,11 @@ void WindowManager::Run()
 		
 		switch(event.type)
 		{
+			
+			case Expose:
+				cout<<"Exposure!"<<endl;
+			break;
+			
 			case MapNotify:
 				cout<<"Mapped window"<<endl;
 				
