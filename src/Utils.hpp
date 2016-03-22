@@ -15,6 +15,11 @@ namespace com
 				void RGB(cairo_t * cairo,uint8_t r,uint8_t g,uint8_t b);
 				void RGB(cairo_t * cairo,uint32_t hex);
 			}
+			
+			namespace draw
+			{
+				void Circle(cairo_t * cairo,double x,double y,double r);
+			}
 		}
 	}
 }

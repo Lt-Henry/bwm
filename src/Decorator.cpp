@@ -83,18 +83,30 @@ void Decorator::Update()
 	cairo_move_to(cairo,tx,ty);
 	cairo_show_text (cairo, name.c_str());
 	
+	
 	color::RGB(cairo,0xe74c3c);
-	cairo_arc(cairo,width-10,10,8,0,2.0f*M_PI);
+	draw::Circle(cairo,width-10,12,8);
 	cairo_fill(cairo);
 	
 	color::RGB(cairo,0xf39c12);
-	cairo_arc(cairo,width-30,10,8,0,2.0f*M_PI);
+	draw::Circle(cairo,width-30,12,8);
 	cairo_fill(cairo);
 	
 	color::RGB(cairo,0x27ae60);
-	cairo_arc(cairo,width-50,10,8,0,2.0f*M_PI);
+	draw::Circle(cairo,width-50,12,8);
 	cairo_fill(cairo);
 
+	color::RGB(cairo,180,180,180);
+	
+	cairo_move_to(cairo,0,24);
+	cairo_line_to(cairo,width,24);
+	cairo_stroke(cairo);
+	
+	color::RGB(cairo,210,210,210);
+	
+	cairo_move_to(cairo,0,1);
+	cairo_line_to(cairo,width,1);
+	cairo_stroke(cairo);
 }
 
 void Decorator::CreateContext()
