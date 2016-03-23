@@ -24,11 +24,12 @@ WindowManager::~WindowManager()
 void WindowManager::Run()
 {
 	
-	Decorator * tab=new Decorator(display,root,"Hello world");
+	Decorator * tab;
+		
 	
 	bool quit_requested=false;
 	
-	XSelectInput(display,root,SubstructureRedirectMask | SubstructureNotifyMask | ExposureMask);
+	XSelectInput(display,root,SubstructureRedirectMask | SubstructureNotifyMask);
 	
 	XSync(display, false);
 	
@@ -45,11 +46,13 @@ void WindowManager::Run()
 		{
 			
 			case Expose:
-				cout<<"Exposure!"<<endl;
+				if(tabs.find(event.xexpose.window)!=tabs.end())
+				{
+					tabs[event.xexpose.window]->OnExpose();
+				}
 			break;
 			
 			case MapNotify:
-				cout<<"Mapped window"<<endl;
 				
 			break;
 		
@@ -68,18 +71,30 @@ void WindowManager::Run()
 			
 			case MapRequest:
 				cout<<"map request"<<endl;
-				window=event.xmaprequest.window;
-				XMapWindow(display,window);
+				
+				if(tabs.find(event.xmaprequest.window)!=tabs.end())
+				{
+					cout<<"decorator already mapped"<<endl;
+				}
+				else
+				{
+					tab=new Decorator(display,event.xmaprequest.window,"Window");
+					tabs[tab->GetWindow()]=tab;
+					
+					XMapWindow(display,tab->GetWindow());
+					XMapWindow(display,event.xmaprequest.window);
+					
+				}
+				
+				
 			break;
 			
 			case ConfigureNotify:
-				cout<<"configure notify"<<endl;
+				//cout<<"configure notify"<<endl;
 			break;
 			
 			case ConfigureRequest:
-				cout<<"configure request"<<endl;
-				
-				
+								
 				changes.x=event.xconfigurerequest.x;
 				changes.y=event.xconfigurerequest.y;
 				changes.width=event.xconfigurerequest.width;
@@ -91,28 +106,33 @@ void WindowManager::Run()
 				window=event.xconfigurerequest.window;
 				XConfigureWindow(display,window,event.xconfigurerequest.value_mask,&changes);
 				
-				tab->Update();
 				
 			break;
 			
 			case ButtonPress:
-				cout<<"Button pressed"<<endl;
-				cout<<"window: "<<event.xbutton.window<<endl;
-				cout<<"x: "<<event.xbutton.x<<endl;
-				cout<<"y: "<<event.xbutton.y<<endl;
+				
+				if(tabs.find(event.xbutton.window)!=tabs.end())
+				{
+					tabs[event.xbutton.window]->OnButtonPress(event.xbutton.x,event.xbutton.y,event.xbutton.x_root,event.xbutton.y_root,event.xbutton.button);
+				}
+				
 			break;
 			
 			case ButtonRelease:
-				cout<<"Button released"<<endl;
-				cout<<"window: "<<event.xbutton.window<<endl;
+				
+				if(tabs.find(event.xbutton.window)!=tabs.end())
+				{
+					tabs[event.xbutton.window]->OnButtonRelease(event.xbutton.x,event.xbutton.y,event.xbutton.x_root,event.xbutton.y_root,event.xbutton.button);
+				}
+
 			break;
 			
 			case MotionNotify:
-				/*
-				cout<<"motion"<<endl;
-				cout<<"x: "<<event.xmotion.x<<endl;
-				cout<<"y: "<<event.xmotion.y<<endl;
-				*/ 
+				
+				if(tabs.find(event.xbutton.window)!=tabs.end())
+				{
+					tabs[event.xbutton.window]->OnMotion(event.xbutton.x,event.xbutton.y,event.xbutton.x_root,event.xbutton.y_root);
+				}
 			break;
 		}
 	}

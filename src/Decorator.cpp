@@ -23,13 +23,18 @@ Decorator::Decorator(Display * display,Window child,string name)
 	this->width=320;
 	this->height=240;
 	
+	grabbed=false;
+	
 	me = XCreateSimpleWindow(display, XDefaultRootWindow(display), 20, 20,width,height,0, 0xffffffff, 0xffffffff);
 	
 	/* Set window title */
 	XStoreName(display,me,name.c_str());
 	
-	XMapWindow(display, me);
-      
+	//XMapWindow(display, me);
+    
+    XSelectInput(display,me,ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask );
+    
+    /*  
 	XGrabPointer(
 		display,
 		me,
@@ -44,6 +49,9 @@ Decorator::Decorator(Display * display,Window child,string name)
 		cairo=nullptr;
 		surface=nullptr;
 				
+	*/
+	
+	XReparentWindow(display,child,me,2,24);
 		
 	CreateContext();
 	
@@ -54,6 +62,11 @@ Decorator::Decorator(Display * display,Window child,string name)
 Decorator::~Decorator()
 {
 	
+}
+
+Window Decorator::GetWindow()
+{
+	return me;
 }
 
 
@@ -107,6 +120,12 @@ void Decorator::Update()
 	cairo_move_to(cairo,0,1);
 	cairo_line_to(cairo,width,1);
 	cairo_stroke(cairo);
+	
+	//fake child window
+	
+	color::RGB(cairo,230,230,230);
+	cairo_rectangle(cairo,2,25,width-4,height-28);
+	cairo_fill(cairo);
 }
 
 void Decorator::CreateContext()
@@ -126,4 +145,37 @@ void Decorator::CreateContext()
     cairo_xlib_surface_set_size(surface, width, height);
     cairo=cairo_create(surface);
 	
+}
+
+void Decorator::OnExpose()
+{
+	Update();
+}
+
+void Decorator::OnButtonPress(int x,int y,int rx,int ry,unsigned int button)
+{
+	//raise window to the top
+	XRaiseWindow(display,me);
+	
+	if(y<24)
+	{
+		cout<<"Window grabbed!"<<endl;
+		grabbed=true;
+		
+		grab_x=-x;
+		grab_y=-y;
+	}
+}
+
+void Decorator::OnButtonRelease(int x,int y,int rx,int ry,unsigned int button)
+{
+	grabbed=false;
+}
+
+void Decorator::OnMotion(int x,int y,int rx,int ry)
+{
+	if(grabbed)
+	{
+		XMoveWindow(display,me,rx+grab_x,ry+grab_y);
+	}
 }

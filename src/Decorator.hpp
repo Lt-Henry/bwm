@@ -25,6 +25,13 @@ namespace com
 				cairo_t * cairo;
 				cairo_surface_t * surface;
 				
+				//status
+				bool grabbed;
+				
+				//grab
+				int grab_x;
+				int grab_y;
+				
 				unsigned int width;
 				unsigned int height;
 				
@@ -37,7 +44,14 @@ namespace com
 				Decorator(Display * display,Window child,std::string name);
 				~Decorator();
 				
+				Window GetWindow();
+				
 				void Update();
+				
+				void OnExpose();
+				void OnButtonPress(int x,int y,int rx,int ry,unsigned int button);
+				void OnButtonRelease(int x,int y,int rx,int ry,unsigned int button);
+				void OnMotion(int x,int y,int rx,int ry);
 				
 			};
 		}
