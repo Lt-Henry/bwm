@@ -14,63 +14,68 @@ using namespace com::toxiclabs::bwm;
 
 
 
-Decorator::Decorator(Display * display,Window child,string name)
+Decorator::Decorator(Display * display,Window child)
 {
 	this->display=display;
 	this->child=child;
-	this->name=name;
 	
 	this->width=320;
 	this->height=240;
 	
 	grabbed=false;
 	
+	char* xname=nullptr;
+	
+	// create a x window
 	me = XCreateSimpleWindow(display, XDefaultRootWindow(display), 20, 20,width,height,0, 0xffffffff, 0xffffffff);
 	
-	/* Set window title */
-	XStoreName(display,me,name.c_str());
+	// get window title
+	XFetchName(display,child,&xname);
+	name=string(xname);
 	
-	//XMapWindow(display, me);
-    
-    XSelectInput(display,me,ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask );
-    
-    /*  
-	XGrabPointer(
-		display,
-		me,
-		false,
-		PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
-		GrabModeAsync,
-		GrabModeAsync,
-		me,
-		None,
-		CurrentTime);
-		
-		cairo=nullptr;
-		surface=nullptr;
-				
-	*/
+	// select events we want to receive
+	XSelectInput(display,me,ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | SubstructureRedirectMask | SubstructureNotifyMask);
+
 	
+	// reparent child
 	XReparentWindow(display,child,me,2,24);
 		
+		
+	int cx;
+	int cy;
+	unsigned int cborder;
+	unsigned int cdepth;
+	Window croot;
+	unsigned int cwidth;
+	unsigned int cheight;
+	
+	
+	XGetGeometry(display,child,&croot,&cx,&cy,&cwidth,&cheight,&cborder,&cdepth);
+	
+	
+	width=cwidth+4+2;
+	height=cheight+24+2+2;
+	
+	XResizeWindow(display,me,width,height);
+	
 	CreateContext();
 	
-	Update();
+	Draw();
 }
 
 
 Decorator::~Decorator()
 {
+	cairo_destroy(cairo);
+	cairo_surface_destroy(surface);
 	
-}
-
-Window Decorator::GetWindow()
-{
-	return me;
+	//XUnmapWindow(display,me);
+	XDestroyWindow(display,me);
 }
 
 
-void Decorator::Update()
+
+void Decorator::Draw()
 {
 	cairo_text_extents_t te;
 	cairo_font_extents_t fe;
@@ -142,14 +147,36 @@ void Decorator::CreateContext()
 	cout<<"New size: "<<width<<","<<height<<endl;	
 	
 	surface = cairo_xlib_surface_create(display, me, DefaultVisual(display, 0), width, height);
-    cairo_xlib_surface_set_size(surface, width, height);
-    cairo=cairo_create(surface);
+	cairo_xlib_surface_set_size(surface, width, height);
+	cairo=cairo_create(surface);
 	
+}
+
+Window Decorator::GetWindow()
+{
+	return me;
+}
+
+Window Decorator::GetChild()
+{
+	return child;
+}
+
+void Decorator::Map()
+{
+	XMapWindow(display,me);
+	XMapWindow(display,child);
+}
+
+void Decorator::UnMap()
+{
+	XUnmapWindow(display,me);
+	XUnmapWindow(display,child);
 }
 
 void Decorator::OnExpose()
 {
-	Update();
+	Draw();
 }
 
 void Decorator::OnButtonPress(int x,int y,int rx,int ry,unsigned int button)

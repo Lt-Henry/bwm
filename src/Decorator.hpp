@@ -38,15 +38,19 @@ namespace com
 				std::string name;
 				
 				void CreateContext();
+				void Draw();
 				
 				public:
 				
-				Decorator(Display * display,Window child,std::string name);
+				Decorator(Display * display,Window child);
 				~Decorator();
 				
 				Window GetWindow();
+				Window GetChild();
 				
-				void Update();
+				
+				void Map();
+				void UnMap();
 				
 				void OnExpose();
 				void OnButtonPress(int x,int y,int rx,int ry,unsigned int button);

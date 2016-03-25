@@ -22,7 +22,8 @@ namespace com
 				Display * display;
 				Window root;
 				
-				std::map<Window,Decorator *> tabs;
+				std::map<Window,Decorator *> frames;
+				std::map<Window,Decorator *> clients;
 				
 				public:
 				
