@@ -171,7 +171,7 @@ void Decorator::Map()
 void Decorator::UnMap()
 {
 	XUnmapWindow(display,me);
-	XUnmapWindow(display,child);
+	//XUnmapWindow(display,child);
 }
 
 void Decorator::OnExpose()

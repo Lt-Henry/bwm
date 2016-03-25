@@ -68,7 +68,7 @@ void WindowManager::Run()
 				else
 				{
 					cout<<"window already is decorated"<<endl;
-					frames[event.xmaprequest.window]->Map();
+					clients[event.xmaprequest.window]->Map();
 				}
 				
 			break;
@@ -81,6 +81,11 @@ void WindowManager::Run()
 			case UnmapNotify:
 				cout<<"unmapping window"<<endl;
 				cout<<"id:"<<event.xunmap.window<<endl;
+				
+				if(clients.find(event.xunmap.window)!=clients.end())
+				{
+					clients[event.xunmap.window]->UnMap();
+				}
 				
 			break;
 		
