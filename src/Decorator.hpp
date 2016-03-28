@@ -14,6 +14,7 @@ namespace com
 	{
 		namespace bwm
 		{
+			
 			class Decorator
 			{
 				private:
@@ -37,10 +38,20 @@ namespace com
 				
 				std::string name;
 				
+				
 				void CreateContext();
 				void Draw();
 				
+				static cairo_surface_t * close;
+				static cairo_surface_t * maximize;
+				static cairo_surface_t * minimize;
+				static uint32_t bg_color;
+				static uint32_t fg_color;
+				
+				
 				public:
+				
+				static void LoadTheme();
 				
 				Decorator(Display * display,Window child);
 				~Decorator();

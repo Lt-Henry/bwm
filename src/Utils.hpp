@@ -14,6 +14,8 @@ namespace com
 			{
 				void RGB(cairo_t * cairo,uint8_t r,uint8_t g,uint8_t b);
 				void RGB(cairo_t * cairo,uint32_t hex);
+				
+				void RGBA(cairo_t * cairo,uint32_t hex);
 			}
 			
 			namespace draw

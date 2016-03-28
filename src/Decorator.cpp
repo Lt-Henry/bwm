@@ -13,6 +13,35 @@ using namespace std;
 using namespace com::toxiclabs::bwm;
 
 
+cairo_surface_t * Decorator::close = nullptr;
+cairo_surface_t * Decorator::maximize = nullptr;
+cairo_surface_t * Decorator::minimize = nullptr;
+
+uint32_t Decorator::bg_color=0x00000000;
+uint32_t Decorator::fg_color=0xffffffff;
+
+void Decorator::LoadTheme()
+{
+	cairo_t * cr;
+	close=cairo_image_surface_create(CAIRO_FORMAT_ARGB32,24,24);
+	
+	cr=cairo_create(close);
+	
+	cairo_set_source_rgb(cr,1.0,1.0,1.0);
+	cairo_set_line_width(cr,4.0);
+	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
+	cairo_move_to(cr,2.0,2.0);
+	cairo_line_to(cr,22.0,22.0);
+	cairo_stroke(cr);
+	cairo_move_to(cr,2.0,22.0);
+	cairo_line_to(cr,22.0,2.0);
+	
+	cairo_destroy(cr);
+	
+	Decorator::bg_color=0x999999ff;
+	Decorator::fg_color=0xff9900ff;
+	
+}
 
 Decorator::Decorator(Display * display,Window child)
 {
@@ -87,7 +116,7 @@ void Decorator::Draw()
 	
 		
 	
-	color::RGB(cairo,0xbdc3c7);
+	color::RGBA(cairo,Decorator::bg_color);
 	cairo_paint(cairo);
 	
 	float tx;
@@ -126,11 +155,7 @@ void Decorator::Draw()
 	cairo_line_to(cairo,width,1);
 	cairo_stroke(cairo);
 	
-	//fake child window
-	
-	color::RGB(cairo,230,230,230);
-	cairo_rectangle(cairo,2,25,width-4,height-28);
-	cairo_fill(cairo);
+
 }
 
 void Decorator::CreateContext()

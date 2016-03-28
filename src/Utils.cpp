@@ -32,6 +32,25 @@ void com::toxiclabs::bwm::color::RGB(cairo_t * cairo,uint32_t hex)
 	cairo_set_source_rgb(cairo,dr,dg,db);
 }
 
+void com::toxiclabs::bwm::color::RGBA(cairo_t * cairo,uint32_t hex)
+{
+	double dr,dg,db,da,df;
+	int r,g,b,a;
+	
+	r=(hex & 0xFF000000) >> 24;
+	g=(hex & 0x00FF0000) >> 16;
+	b=(hex & 0x0000FF00) >> 8;
+	a=(hex & 0x000000FF);
+	
+	df=1.0/255.0;
+	dr=r*df;
+	dg=g*df;
+	db=b*df;
+	da=a*df;
+	
+	cairo_set_source_rgba(cairo,dr,dg,db,da);
+}
+
 void com::toxiclabs::bwm::draw::Circle(cairo_t * cairo,double x,double y,double r)
 {
 	cairo_arc(cairo,x,y,r,0,M_PI*2.0);

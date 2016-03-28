@@ -13,6 +13,8 @@ WindowManager::WindowManager(string name)
 	root=DefaultRootWindow(display);
 	
 	cout<<"root: "<<root<<endl;
+	
+	Decorator::LoadTheme();
 }
 
 WindowManager::~WindowManager()
