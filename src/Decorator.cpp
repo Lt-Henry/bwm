@@ -23,20 +23,55 @@ uint32_t Decorator::fg_color=0xffffffff;
 void Decorator::LoadTheme()
 {
 	cairo_t * cr;
-	close=cairo_image_surface_create(CAIRO_FORMAT_ARGB32,24,24);
+	
+	//close surface
+	close=cairo_image_surface_create(CAIRO_FORMAT_ARGB32,16,16);
 	
 	cr=cairo_create(close);
 	
 	cairo_set_source_rgb(cr,1.0,1.0,1.0);
-	cairo_set_line_width(cr,4.0);
+	cairo_set_line_width(cr,2.0);
 	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
 	cairo_move_to(cr,2.0,2.0);
-	cairo_line_to(cr,22.0,22.0);
+	cairo_line_to(cr,14.0,14.0);
 	cairo_stroke(cr);
-	cairo_move_to(cr,2.0,22.0);
-	cairo_line_to(cr,22.0,2.0);
+	cairo_move_to(cr,2.0,14.0);
+	cairo_line_to(cr,14.0,2.0);
+	cairo_stroke(cr);
 	
 	cairo_destroy(cr);
+	
+	
+	//maximize surface
+	maximize=cairo_image_surface_create(CAIRO_FORMAT_ARGB32,16,16);
+	cr=cairo_create(maximize);
+	
+	cairo_set_source_rgb(cr,1.0,1.0,1.0);
+	cairo_set_line_width(cr,2.0);
+	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
+	cairo_move_to(cr,2.0,2.0);
+	cairo_line_to(cr,14.0,2.0);
+	cairo_line_to(cr,14.0,14.0);
+	cairo_line_to(cr,2.0,14.0);
+	cairo_line_to(cr,2.0,2.0);
+	cairo_stroke(cr);
+	
+	cairo_destroy(cr);
+	
+	//minimize surface
+	minimize=cairo_image_surface_create(CAIRO_FORMAT_ARGB32,16,16);
+	cr=cairo_create(minimize);
+	
+	cairo_set_source_rgb(cr,1.0,1.0,1.0);
+	cairo_set_line_width(cr,2.0);
+	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
+	cairo_move_to(cr,2.0,14.0);
+	cairo_line_to(cr,14.0,14.0);
+	cairo_stroke(cr);
+	
+	cairo_destroy(cr);
+		
+	
 	
 	Decorator::bg_color=0x999999ff;
 	Decorator::fg_color=0xff9900ff;
@@ -130,30 +165,23 @@ void Decorator::Draw()
 	cairo_move_to(cairo,tx,ty);
 	cairo_show_text (cairo, name.c_str());
 	
-	
+	/*
 	color::RGB(cairo,0xe74c3c);
 	draw::Circle(cairo,width-10,12,8);
 	cairo_fill(cairo);
+	*/
 	
-	color::RGB(cairo,0xf39c12);
-	draw::Circle(cairo,width-30,12,8);
-	cairo_fill(cairo);
 	
-	color::RGB(cairo,0x27ae60);
-	draw::Circle(cairo,width-50,12,8);
-	cairo_fill(cairo);
+	cairo_set_source_surface(cairo,close,width-20,4);
+	cairo_paint(cairo);
+	
+	cairo_set_source_surface(cairo,maximize,width-20-4-16,4);
+	cairo_paint(cairo);
+	
+	cairo_set_source_surface(cairo,minimize,width-20-4-16-4-16,4);
+	cairo_paint(cairo);
 
-	color::RGB(cairo,180,180,180);
-	
-	cairo_move_to(cairo,0,24);
-	cairo_line_to(cairo,width,24);
-	cairo_stroke(cairo);
-	
-	color::RGB(cairo,210,210,210);
-	
-	cairo_move_to(cairo,0,1);
-	cairo_line_to(cairo,width,1);
-	cairo_stroke(cairo);
+
 	
 
 }
