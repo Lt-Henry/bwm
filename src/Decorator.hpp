@@ -2,6 +2,8 @@
 #ifndef _DECORATOR_
 #define _DECORATOR_
 
+#include "Rect.hpp"
+
 #include <X11/Xlib.h>
 #include <cairo.h>
 
@@ -37,6 +39,10 @@ namespace com
 				unsigned int height;
 				
 				std::string name;
+				
+				Rect btnClose;
+				Rect btnMax;
+				Rect btnMin;
 				
 				
 				void CreateContext();

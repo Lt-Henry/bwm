@@ -30,13 +30,13 @@ void Decorator::LoadTheme()
 	cr=cairo_create(close);
 	
 	cairo_set_source_rgb(cr,1.0,1.0,1.0);
-	cairo_set_line_width(cr,2.0);
+	cairo_set_line_width(cr,3.0);
 	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
-	cairo_move_to(cr,2.0,2.0);
-	cairo_line_to(cr,14.0,14.0);
+	cairo_move_to(cr,4.0,4.0);
+	cairo_line_to(cr,12.0,12.0);
 	cairo_stroke(cr);
-	cairo_move_to(cr,2.0,14.0);
-	cairo_line_to(cr,14.0,2.0);
+	cairo_move_to(cr,4.0,12.0);
+	cairo_line_to(cr,12.0,4.0);
 	cairo_stroke(cr);
 	
 	cairo_destroy(cr);
@@ -47,13 +47,13 @@ void Decorator::LoadTheme()
 	cr=cairo_create(maximize);
 	
 	cairo_set_source_rgb(cr,1.0,1.0,1.0);
-	cairo_set_line_width(cr,2.0);
+	cairo_set_line_width(cr,3.0);
 	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
-	cairo_move_to(cr,2.0,2.0);
-	cairo_line_to(cr,14.0,2.0);
-	cairo_line_to(cr,14.0,14.0);
-	cairo_line_to(cr,2.0,14.0);
-	cairo_line_to(cr,2.0,2.0);
+	cairo_move_to(cr,4.0,4.0);
+	cairo_line_to(cr,12.0,4.0);
+	cairo_line_to(cr,12.0,12.0);
+	cairo_line_to(cr,4.0,12.0);
+	cairo_line_to(cr,4.0,4.0);
 	cairo_stroke(cr);
 	
 	cairo_destroy(cr);
@@ -63,10 +63,10 @@ void Decorator::LoadTheme()
 	cr=cairo_create(minimize);
 	
 	cairo_set_source_rgb(cr,1.0,1.0,1.0);
-	cairo_set_line_width(cr,2.0);
+	cairo_set_line_width(cr,3.0);
 	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
-	cairo_move_to(cr,2.0,14.0);
-	cairo_line_to(cr,14.0,14.0);
+	cairo_move_to(cr,4.0,12.0);
+	cairo_line_to(cr,12.0,12.0);
 	cairo_stroke(cr);
 	
 	cairo_destroy(cr);
@@ -88,6 +88,7 @@ Decorator::Decorator(Display * display,Window child)
 	
 	grabbed=false;
 	
+		
 	char* xname=nullptr;
 	
 	// create a x window
@@ -202,6 +203,8 @@ void Decorator::CreateContext()
 	surface = cairo_xlib_surface_create(display, me, DefaultVisual(display, 0), width, height);
 	cairo_xlib_surface_set_size(surface, width, height);
 	cairo=cairo_create(surface);
+	
+	btnClose=Rect(width-20,4,16,16);
 	
 }
 
