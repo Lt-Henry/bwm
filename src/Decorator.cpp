@@ -32,11 +32,11 @@ void Decorator::LoadTheme()
 	cairo_set_source_rgb(cr,1.0,1.0,1.0);
 	cairo_set_line_width(cr,3.0);
 	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
-	cairo_move_to(cr,4.0,4.0);
-	cairo_line_to(cr,12.0,12.0);
+	cairo_move_to(cr,6.0,6.0);
+	cairo_line_to(cr,10.0,10.0);
 	cairo_stroke(cr);
-	cairo_move_to(cr,4.0,12.0);
-	cairo_line_to(cr,12.0,4.0);
+	cairo_move_to(cr,6.0,10.0);
+	cairo_line_to(cr,10.0,6.0);
 	cairo_stroke(cr);
 	
 	cairo_destroy(cr);
@@ -47,7 +47,7 @@ void Decorator::LoadTheme()
 	cr=cairo_create(maximize);
 	
 	cairo_set_source_rgb(cr,1.0,1.0,1.0);
-	cairo_set_line_width(cr,3.0);
+	cairo_set_line_width(cr,2.0);
 	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
 	cairo_move_to(cr,4.0,4.0);
 	cairo_line_to(cr,12.0,4.0);
@@ -63,7 +63,7 @@ void Decorator::LoadTheme()
 	cr=cairo_create(minimize);
 	
 	cairo_set_source_rgb(cr,1.0,1.0,1.0);
-	cairo_set_line_width(cr,3.0);
+	cairo_set_line_width(cr,2.0);
 	cairo_set_line_cap(cr,CAIRO_LINE_CAP_ROUND);
 	cairo_move_to(cr,4.0,12.0);
 	cairo_line_to(cr,12.0,12.0);
@@ -73,8 +73,8 @@ void Decorator::LoadTheme()
 		
 	
 	
-	Decorator::bg_color=0x999999ff;
-	Decorator::fg_color=0xff9900ff;
+	Decorator::bg_color=0x9d9d9dff;
+	Decorator::fg_color=0xe69858ff;
 	
 }
 
@@ -87,6 +87,7 @@ Decorator::Decorator(Display * display,Window child)
 	this->height=240;
 	
 	grabbed=false;
+	top=false;
 	
 		
 	char* xname=nullptr;
@@ -94,12 +95,13 @@ Decorator::Decorator(Display * display,Window child)
 	// create a x window
 	me = XCreateSimpleWindow(display, XDefaultRootWindow(display), 20, 20,width,height,0, 0xffffffff, 0xffffffff);
 	
+	
 	// get window title
 	XFetchName(display,child,&xname);
 	name=string(xname);
 	
 	// select events we want to receive
-	XSelectInput(display,me,ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | SubstructureRedirectMask | SubstructureNotifyMask);
+	XSelectInput(display,me,ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | SubstructureRedirectMask | SubstructureNotifyMask | StructureNotifyMask);
 
 	
 	// reparent child
@@ -151,7 +153,6 @@ void Decorator::Draw()
 	cairo_font_extents (cairo, &fe);
 	
 		
-	
 	color::RGBA(cairo,Decorator::bg_color);
 	cairo_paint(cairo);
 	
@@ -161,7 +162,10 @@ void Decorator::Draw()
 	tx=(width/2.0)-(te.width/2.0f);
 	ty=fe.height+2.0f;
 	
-	color::RGB(cairo,16,16,16);
+	
+	color::RGB(cairo,240,240,240);
+	
+	
 	
 	cairo_move_to(cairo,tx,ty);
 	cairo_show_text (cairo, name.c_str());
@@ -173,13 +177,36 @@ void Decorator::Draw()
 	*/
 	
 	
-	cairo_set_source_surface(cairo,close,width-20,4);
+	if(btnClose.mouse_over)
+	{
+		color::RGBA(cairo,Decorator::fg_color);
+		cairo_rectangle(cairo,btnClose.x,btnClose.y,24,24);
+		//draw::Circle(cairo,width-20+8,4+8,8);
+		cairo_fill(cairo);
+	}
+	
+	if(btnMaximize.mouse_over)
+	{
+		color::RGBA(cairo,Decorator::fg_color);
+		cairo_rectangle(cairo,btnMaximize.x,btnMaximize.y,24,24);
+		cairo_fill(cairo);
+	}
+	
+	if(btnMinimize.mouse_over)
+	{
+		color::RGBA(cairo,Decorator::fg_color);
+		cairo_rectangle(cairo,btnMinimize.x,btnMinimize.y,24,24);
+		cairo_fill(cairo);
+	}
+	
+	
+	cairo_set_source_surface(cairo,close,width-24+4,4);
 	cairo_paint(cairo);
 	
-	cairo_set_source_surface(cairo,maximize,width-20-4-16,4);
+	cairo_set_source_surface(cairo,maximize,width-48+4,4);
 	cairo_paint(cairo);
 	
-	cairo_set_source_surface(cairo,minimize,width-20-4-16-4-16,4);
+	cairo_set_source_surface(cairo,minimize,width-72+4,4);
 	cairo_paint(cairo);
 
 
@@ -204,7 +231,10 @@ void Decorator::CreateContext()
 	cairo_xlib_surface_set_size(surface, width, height);
 	cairo=cairo_create(surface);
 	
-	btnClose=Rect(width-20,4,16,16);
+	btnClose=Rect(width-24,0,24,24);
+	btnMaximize=Rect(width-48,0,24,24);
+	btnMinimize=Rect(width-72,0,24,24);
+	btnHandle=Rect(0,0,width-72,24);
 	
 }
 
@@ -237,11 +267,14 @@ void Decorator::OnExpose()
 
 void Decorator::OnButtonPress(int x,int y,int rx,int ry,unsigned int button)
 {
-	//raise window to the top
-	XRaiseWindow(display,me);
 	
-	if(y<24)
+	
+	if(btnHandle.mouse_over)
 	{
+	
+		//raise window to the top
+		XRaiseWindow(display,me);
+	
 		cout<<"Window grabbed!"<<endl;
 		grabbed=true;
 		
@@ -260,5 +293,21 @@ void Decorator::OnMotion(int x,int y,int rx,int ry)
 	if(grabbed)
 	{
 		XMoveWindow(display,me,rx+grab_x,ry+grab_y);
+	}
+	else
+	{
+		btnClose.PushMouse(x,y);
+		btnMaximize.PushMouse(x,y);
+		btnMinimize.PushMouse(x,y);
+		btnHandle.PushMouse(x,y);
+		
+		
+		if(btnClose.redraw or btnMaximize.redraw or btnMinimize.redraw)
+		{
+			Draw();
+			btnClose.redraw=false;
+			btnMaximize.redraw=false;
+			btnMinimize.redraw=false;
+		}
 	}
 }

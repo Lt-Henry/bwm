@@ -30,6 +30,7 @@ namespace com
 				
 				//status
 				bool grabbed;
+				bool top;
 				
 				//grab
 				int grab_x;
@@ -40,9 +41,10 @@ namespace com
 				
 				std::string name;
 				
+				Rect btnHandle;
 				Rect btnClose;
-				Rect btnMax;
-				Rect btnMin;
+				Rect btnMaximize;
+				Rect btnMinimize;
 				
 				
 				void CreateContext();

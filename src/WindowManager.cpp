@@ -1,6 +1,7 @@
 
 #include "WindowManager.hpp"
 #include "Decorator.hpp"
+#include "Pointer.hpp"
 
 #include <iostream>
 
@@ -13,6 +14,9 @@ WindowManager::WindowManager(string name)
 	root=DefaultRootWindow(display);
 	
 	cout<<"root: "<<root<<endl;
+	
+	Pointer::Init(display);
+	Pointer::SetCursor(root,"left_ptr");
 	
 	Decorator::LoadTheme();
 }
@@ -110,7 +114,7 @@ void WindowManager::Run()
 			
 			
 			case ConfigureNotify:
-				//cout<<"configure notify"<<endl;
+				cout<<"configure notify for "<<event.xconfigure.window<<" above "<<event.xconfigure.above<<endl;
 			break;
 			
 			case ConfigureRequest:
@@ -125,6 +129,8 @@ void WindowManager::Run()
 				
 				window=event.xconfigurerequest.window;
 				XConfigureWindow(display,window,event.xconfigurerequest.value_mask,&changes);
+				
+				cout<<"configure event for: "<<event.xconfigurerequest.window<<endl;
 				
 				
 			break;
