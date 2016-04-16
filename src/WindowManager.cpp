@@ -2,16 +2,19 @@
 #include "WindowManager.hpp"
 #include "Decorator.hpp"
 #include "Pointer.hpp"
+#include "Frame.hpp"
 
 #include <iostream>
 
 using namespace std;
 using namespace com::toxiclabs::bwm;
 
-WindowManager::WindowManager(string name)
+WindowManager::WindowManager(int argc,char * argv[])
 {
-	display=XOpenDisplay(name.c_str());
+	display=XOpenDisplay(":2");
 	root=DefaultRootWindow(display);
+	
+	application=Gtk::Application::create(argc,argv,"com.toxiclabs.bwm");
 	
 	cout<<"root: "<<root<<endl;
 	
@@ -24,6 +27,67 @@ WindowManager::WindowManager(string name)
 WindowManager::~WindowManager()
 {
 	XCloseDisplay(display);
+}
+
+void WindowManager::Run2()
+{
+
+	bool quit_request=false;
+	
+	XSelectInput(display,root,SubstructureRedirectMask | SubstructureNotifyMask);
+	
+	XSync(display, false);
+	
+	Frame * frame;
+	
+	
+	while(not quit_request)
+	{
+		XEvent event;
+		XWindowChanges changes;
+	
+		// gtk events processing
+		while(Gtk::Main::events_pending())
+		{
+			Gtk::Main::iteration();
+		}
+		
+		//xlib events processing
+		while(XCheckMaskEvent(display,SubstructureRedirectMask | SubstructureNotifyMask,&event))
+		{
+			switch(event.type)
+			{
+				case MapRequest:
+					cout<<"map request"<<endl;
+					
+					frame = new Frame(display,event.xmaprequest.window);
+					//XMapWindow(display,event.xmaprequest.window);
+					//XMapSubwindows(display,event.xmaprequest.window);
+				break;
+				
+				case MapNotify:
+				
+				break;
+				
+				case ConfigureRequest:
+					cout<<"configure request"<<endl;
+					changes.x=event.xconfigurerequest.x;
+					changes.y=event.xconfigurerequest.y;
+					changes.width=event.xconfigurerequest.width;
+					changes.height=event.xconfigurerequest.height;
+					changes.border_width=0;
+					changes.sibling=event.xconfigurerequest.above;
+					changes.stack_mode=event.xconfigurerequest.detail;
+
+					XConfigureWindow(display,event.xconfigurerequest.window,event.xconfigurerequest.value_mask,&changes);
+				break;
+				
+				case ConfigureNotify:
+				
+				break;
+			}
+		}
+	}
 }
 
 

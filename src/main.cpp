@@ -11,9 +11,9 @@ int main(int argc,char *argv[])
 {
 	cout<<"b window manager"<<endl;
 	
-	WindowManager wm(":2");
+	WindowManager wm(argc,argv);
 	
-	wm.Run();
+	wm.Run2();
 	
 	return 0;
 }
